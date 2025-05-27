@@ -47,7 +47,7 @@ yarn build
 Категория товара
 
 ```
-export type ProductCategory = 'soft-skill' | 'another' | 'additional' | 'button' | 'hard-skill';
+export type ProductCategory = 'софт-скил' | 'другое' | 'дополнительное' | 'кнопка' | 'хард-скил';
 ```
 
 Тип оплаты
@@ -105,6 +105,15 @@ export interface IProduct {
 }
 ```
 
+Ответ от сервера на получение карточек
+
+```
+export interface IProductApi {
+    total: number;
+    items: IProduct[];
+}
+```
+
 Данные покупателя
 
 ```
@@ -122,10 +131,8 @@ export interface IUser {
 
 ```
 export interface IProductData {
-    items: IProduct[];
-    preview: string | null;
+    products: IProduct[];
     getProduct(productId: string): IProduct;
-    checkValidation(data: Record<keyof IProduct, string>): boolean;
 }
 ```
 
@@ -200,7 +207,7 @@ export interface ICartIcon {
 Содержит в себе базовую логику управления `DOM`- элементами
 
 Поля класса:
-- `template: HTMLTemplateElement` - элемент темплейта
+- `element: HTMLElement` - элемент темплейта
 - `submitButton: HTMLButtonElement` - кнопка подтверждения
 - `events: IEvents` - брокер событий
 
@@ -217,16 +224,15 @@ export interface ICartIcon {
 
 Отвечает за хранение и логику работы с данными товаров.\
 Поля класса:
-- `items: IProduct[]` - массив объектов товаров
-- `preview: string | null` - id карточки, выбранной для просмотра в модальном окне
+- `_products: IProduct[]` - массив объектов товаров
+- `_preview: string | null` - id карточки, выбранной для просмотра в модальном окне
 - `events: IEvents` - экземпляр класса `EventEmitter` для инициализации событий при изменении данных
 
 Конструктор класса:
 `constructor(events: IEvents)` - принимает экземпляр класса `EventEmitter` для возможности инициализации событий
 
 Методы:
-- `getProduct(productId: string): IProduct` - возвращает товар по его id
-- `checkValidation(data: Record<keyof IProduct, string>): boolean` - проверяет объект с данными товара на валидность
+- `getProduct(productId: string): IProduct` - возвращает товар по его `id`
 - сеттеры и геттеры для сохранения и получения данных из полей класса
 
 #### Класс UserData
@@ -248,11 +254,15 @@ export interface ICartIcon {
 Методы:
 - `removeData(): void` - удаляет данные пользователя
 - `checkValidation(data: Record<keyof IUser, string | number>): boolean` - проверяет объект с данными на валидность
+- `checkField(data: {field: keyof IUser; value: string}):  boolean` - определяет валидность одного из свойств данных пользователя
+- `checkAddress(value: string): boolean` - определяет валидность адреса
+- `checkEmail(value: string): boolean` - определяет валидность почты
+- `checkPhone(value: string): boolean` - определяет валидность телефона
 - сеттеры и геттеры для сохранения и получения данных из полей класса
 
 #### Класс CartData
 
-Отвечает за хранение и логику работы с данными, добавленными в корзину. Конструктор принимает инстант брокера событий.\
+Отвечает за хранение и логику работы с данными, добавленными в корзину.\
 
 Поля класса:
 - `total: number` - общая стоимость товаров
@@ -348,11 +358,12 @@ export interface ICartIcon {
 Расширяет класс `Component`. Отвечает за отображение карточки товара.\
 
 Поля класса:
-- `productDescription: HTMLElement` - элемент разметки с описанием
+- `productButton: HTMLButtonElement` - карточка товара
 - `productImage: HTMLImageElement` - элемент разметки с изображением
 - `productTitle: HTMLElement` - элемент разметки с названием
 - `productCategory: HTMLElement` - элемент разметки с категорией
 - `productPrice: HTMLElement` - элемент разметки с ценой
+- `productId: string` - `id` элемента
 
 Методы:
 - `setData(productData: IProduct): void` - заполняет атрибуты элементов карточки данными
@@ -410,7 +421,7 @@ export interface ICartIcon {
 События представления:
 - `product:select` - выбор товара для отображения в модальном окне
 - `product:submit` - добавление товара в корзину
-- `product:remove` - удаление товара из корзины
+- `product:delete` - удаление товара из корзины
 - `product:validation` - событие, проверяющее возможность добавления товара в корзину
 - `cartIcon:changed` - изменение количества товаров в корзине
 - `cart:submit` - сохранение данных корзины в модальном окне
