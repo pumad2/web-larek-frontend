@@ -2,8 +2,8 @@ import { IUserData, ProductId, IUser, PaymentMethod } from "../../types";
 import { IEvents } from "../base/events";
 
 export class UserData implements IUserData {
-    userData: IUser;
-    events: IEvents;
+    protected userData: IUser;
+    protected events: IEvents;
 
     constructor(events: IEvents) {
         this.events = events;

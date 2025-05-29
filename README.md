@@ -68,24 +68,6 @@ export type ProductId = IProduct['id'];
 export type CartItem = Pick<IProduct, 'title' | 'price'>;
 ```
 
-Главная страница
-
-```
-export type IMainPage = ICartIcon & IProductData;
-```
-
-Модальное окно формы оплаты
-
-```
-export type IOrder = Pick<IUser, 'payment' | 'address'>;
-```
-
-Модальное окно почты и телефона
-
-```
-export type IContacts = Pick<IUser, 'email' | 'phone'>;
-```
-
 Модальное окно успешного оформления
 
 ```
@@ -127,25 +109,41 @@ export interface IUser {
 }
 ```
 
-Список товаров
+Данные товаров
 
 ```
 export interface IProductData {
     products: IProduct[];
-    getProduct(productId: string): IProduct;
+    preview: string | null;
+    getProduct(productId: string): IProduct | undefined;
+    setProducts(products: IProductApi): void;
+}
+```
+
+Список товаров
+
+```
+export interface IProductsContainer {
+    catalog: HTMLElement[];
+}
+```
+
+Заголовок страницы
+
+```
+export interface IHeader {
+    counter: number;
 }
 ```
 
 Хранение данных пользователя
 
 ```
-export interface IUserData extends IUser{
-    set setPaymentMethod(value: PaymentMethod);
-    set setAddress(value: string);
-    set setEmail(value: string);
-    set setPhone(value: string);
+export interface IUserData {
+    render(userData: Partial<IUser>): void;
+    isInCart(productId: string): boolean;
+    toggleItem(productId: string): boolean;
     removeData(): void;
-    checkValidation(data: Record<keyof IUser, string | number>): boolean;
 }
 ```
 
@@ -153,10 +151,25 @@ export interface IUserData extends IUser{
 
 ```
 export interface ICart {
-    items: NodeListOf<HTMLTemplateElement>;
+    catalog: HTMLElement;
     total: number;
-    addCartItem(productElement: HTMLElement): void;
-    removeCartItem(productId: string, payload: Function | null): void;
+    deleteCatalog(): void;
+    updateIndexes(): void;
+}
+```
+
+Форма
+
+```
+export interface IForm {
+    valid: boolean;
+	inputValues: Record<string, string>;
+	error: Record<string, string>;
+    toggleButtons(): void;
+    getValues(): void;
+    showError(field: string, errorMessage: string): void;
+    hideError(field: string): void;
+    checkFields(): boolean;
 }
 ```
 
@@ -207,16 +220,15 @@ export interface ICartIcon {
 Содержит в себе базовую логику управления `DOM`- элементами
 
 Поля класса:
-- `element: HTMLElement` - элемент темплейта
-- `submitButton: HTMLButtonElement` - кнопка подтверждения
-- `events: IEvents` - брокер событий
+- `protected container: HTMLElement;` - элемент темплейта
+- `protected events: IEvents;` - брокер событий
 
 Конструктор класса:
-`constructor(template: HTMLTemplateElement, events: IEvents)` - принимает `DOM`- элемент темплейта и экземпляр класса `EventEmitter` для возможности инициализации событий
+`constructor(element: HTMLTemplateElement | HTMLElement, events: IEvents)` - принимает `DOM`- элемент темплейта или элемент разметки и экземпляр класса `EventEmitter` для возможности инициализации событий
 
 Методы:
-- `setValid(isValid: boolean): void` - изменяет активность кнопки подтверждения
-- геттеры и сеттеры для работы с данными
+- `render(data?: Partial<T>)` - обновляет значения свойств экземпляра и возвращает DOM- элемент компонента
+- `setDisabled(element: HTMLElement, state: boolean)` - меняет статус блокировки переданного элемента
 
 ### Слой данных
 
@@ -233,6 +245,7 @@ export interface ICartIcon {
 
 Методы:
 - `getProduct(productId: string): IProduct` - возвращает товар по его `id`
+- `setProducts(products: IProductApi)` - изменяет значение свойства `_products`
 - сеттеры и геттеры для сохранения и получения данных из полей класса
 
 #### Класс UserData
@@ -240,42 +253,17 @@ export interface ICartIcon {
 Отвечает за хранение и логику работы с данными пользователя.\
 
 Поля класса:
-- `payment: PaymentMethod` - выбранный тип оплаты
-- `email: string` - почта пользователя
-- `phone: string` - телефон пользователя
-- `address: string` - адрес пользователя
-- `total: number` - общая стоимость выбранных товаров
-- `items: ProductId[]` - массив с id выбранных товаров
-- `events: IEvents` - экземпляр класса `EventEmitter` для инициализации событий при изменении данных
+- `protected userData: IUser;` - хранит в себе объект с данными пользователя
+- `protected events: IEventsж` - экземпляр класса `EventEmitter` для инициализации событий при изменении данных
 
 Конструктор класса:
 `constructor(events: IEvents)` - принимает экземпляр класса `EventEmitter` для возможности инициализации событий
 
 Методы:
 - `removeData(): void` - удаляет данные пользователя
-- `checkValidation(data: Record<keyof IUser, string | number>): boolean` - проверяет объект с данными на валидность
-- `checkField(data: {field: keyof IUser; value: string}):  boolean` - определяет валидность одного из свойств данных пользователя
-- `checkAddress(value: string): boolean` - определяет валидность адреса
-- `checkEmail(value: string): boolean` - определяет валидность почты
-- `checkPhone(value: string): boolean` - определяет валидность телефона
-- сеттеры и геттеры для сохранения и получения данных из полей класса
-
-#### Класс CartData
-
-Отвечает за хранение и логику работы с данными, добавленными в корзину.\
-
-Поля класса:
-- `total: number` - общая стоимость товаров
-- `items: CartItem[]` - массив объектов товаров, добавленных в корзину
-- `events: IEvents` - экземпляр класса `EventEmitter` для инициализации событий при изменении данных
-
-Конструктор класса:
-`constructor(events: IEvents)` - принимает экземпляр класса `EventEmitter` для возможности инициализации событий
-
-Методы:
-- `countTotalPrice(): number` - счетчик общей стоимости
-- `addCartItem(productElement: HTMLElement): void` - добавляет товар в конец массива
-- `removeCartItem(productId: string, payload: Function | null = null): void` - удаляет товар из корзины. Если передан колбэк, то выполняет его после обновления, если нет, то вызывает событие изменения массива
+- `render(userData: Partial<IUser>)` - обновляет значения свойств экземпляра и возвращает данные пользователя
+- `isInCart(productId: string): boolean` - ищет переданный `id` товара в данных пользователя
+- `toggleItem(productId: string): boolean` - ищет переданный `id` товара в данных пользователя. Добавляет значение в данные пользователя, если не нашел соответствующий `id`, и удаляет его, если находит
 - сеттеры и геттеры для сохранения и получения данных из полей класса
 
 ### Слой представления
@@ -285,117 +273,123 @@ export interface ICartIcon {
 Расширяет класс `Component`. Реализует модальное окно.\
 
 Поля класса:
-- `modal: HTMLElement` - элемент модального окна
+- `protected closeButton: HTMLButtonElement;` - элемент закрытия модального окна
+- `protected modal: HTMLElement` - элемент модального окна
+- `protected modalContent: HTMLElement;` - элемент, в который помещается содержимое модального окна
 
 Конструктор класса:
-`constructor(template: HTMLTemplateElement, events: IEvents, selector: HTMLElement)` - расширяет родительский конструктор, принимает `DOM`- элемент темплейта, экземпляр класса `EventEmitter` для возможности инициализации событий и селектор, по которому в разметке страницы будет индетифицировано модальное окно
+`constructor(template: HTMLTemplateElement | HTMLElement, events: IEvents, selector: HTMLElement)` - расширяет родительский конструктор, принимает `DOM`- элемент темплейта или элемент разметки и экземпляр класса `EventEmitter` для возможности инициализации событий
 
 Методы:
+- `handleEscUp(evt: KeyboardEvent)` - закрывает окно при нажатии на Escape
 - `open(): void` - открывает модальное окно
 - `close(): void` - закрывает модальное окно, устанавливая слушатели на клавиатуру для закрытия по Esc, на клик по оверлею и кнопку- крестик
+- `render(data?: Partial<T>): HTMLElement` - расширяет родительский метод, устанавливает содержимое модального окна и открывает модальное окно
 
-#### Класс ModalForm
+#### Класс Form
 
 Расширяет класс `Modal`. Реализует модальное окно с формой, содержащей поля ввода. При сабмите инициирует событие, передавая в него объект с данными из полей ввода формы. Предоставляет методы для отображения ошибок и управления активностью кнопки сохранения.\
 
 Поля класса:
-- `form: HTMLFormElement` - элемент формы
+- `_form: HTMLFormElement` - элемент формы
 - `formName: string` - значение атрибута `name` формы
 - `inputs: NodeListOf<HTMLInputElement>` - коллекция всех полей ввода формы
-- `errors: Record<string, HTMLElement>` - объект, хранящий все элементы для вывода ошибок под полями формы с привязкой к атрибуту `name` полей ввода
+- `errors: HTMLElement` - элемент, в котором отображается ошибка
+- `protected submitButton: HTMLButtonElement;` - элемент кнопки сабмита
+- `protected buttonFields?: NodeListOf<HTMLElement>;` - коллекция полей с кнопками формы
+
+Конструктор класса:
+`constructor(template: HTMLTemplateElement, events: IEvents)` - расширяет родительский конструктор, принимает `DOM`- элемент темплейта и экземпляр класса `EventEmitter` для возможности инициализации событий
 
 Методы:
-
-- `getInputValues(): Record<string, string>` - возвращает объект с данными из полей формы, где ключ- `name` поля ввода, а значение- данные, введенные пользователем
+- `protected getValues()` - возвращает объект с данными из полей формы, где ключ- `name` поля ввода, а значение- данные, введенные пользователем
+- `protected toggleButtons()` - переключает активность кнопки в каждом поле с кнопками
 - `setError(data: { field: string, value: string, validInfo: string }): void` - принимает объект с данными для отображения или скрытия текстов ошибок под полями ввода
-- `showInputError(field: string, errorMessage: string): void` - отображает полученный текст ошибки под указанным полем ввода
-- `hideInputError(field: string): void` - очищает текст ошибки под указанным полем ввода
-- `close(): void` - расширяет родительский метод, при закрытии дополнительно очищает поля формы и деактивирует кнопку сохранения
-- `get form: HTMLElement` - геттер для получения элемента формы
+- `protected showError(field: string, errorMessage: string): void` - отображает полученный текст ошибки
+- `protected hideError(field: string): void` - очищает текст ошибки
+- `close(): void` - расширяет родительский метод, при закрытии дополнительно очищает форму и скрывает ошибки
+- `checkFields(): boolean` - проверяет заполненность формы
 
-#### Класс ModalCart
+#### Класс Cart
 
-Расширяет класс `Modal`. Реализует модальное окно с корзиной. При сабмите инициирует событие, передавая в него объект с массивом `id` товаров и общей стоимостью. Предоставляет методы для отображения ошибок и управления активностью кнопки сохранения.\
+Расширяет класс `Modal`. Реализует модальное окно с корзиной. При сабмите инициирует событие, передавая в него объект с массивом `id` товаров и общей стоимостью.\
 
 Поля класса:
-- `container: HTMLElement` - контейнер для отображения товаров, добавленных в корзину
-- `totalPrice: HTMLElement` - элемент для отображения общей стоимости
-- `_items: NodeListOf<HTMLTemplateElement>` - массив объектов товаров, добавленных в корзину
+- `_catalog: HTMLElement` - контейнер для отображения товаров, добавленных в корзину
+- `_total: HTMLElement` - элемент для отображения общей стоимости
+- `protected events: IEvents` - экземпляр класса `EventEmitter` для инициализации событий при изменении данных
+- `protected cartButton: HTMLElement;` - элемент кнопки корзины
 
 Методы:
-- `updateTotalPrice(price: number): void` - обновляет общую стоимость
-- `addCartItem(productElement: HTMLElement): void` - добавляет товар в конец массива
-- `removeCartItem(productId: string, payload: Function | null = null): void` - удаляет товар из корзины. Если передан колбэк, то выполняет его после обновления, если нет, то вызывает событие изменения массива
+- `deleteCatalog()` - очищает корзину, обнуляет общую стоимость и отключает активность кнопки
+- `updateIndexes()` - обновляет порядковые номера товаров в корзине
 
 #### Класс ModalProduct
 
-Расширяет класс `Modal`. Реализует модальное окно с товаром. При сабмите инициирует событие, передавая в него объект с данными товара. Предоставляет метод для управления активностью кнопки сохранения. При открытии модального окна получает данные товара, которые нужно показать.\
+Расширяет класс `Modal`. Реализует модальное окно с товаром. При сабмите инициирует событие, передавая в него объект с данными товара. При открытии модального окна получает данные товара, которые нужно показать.\
 
 Поля класса:
+- `protected productButton: HTMLButtonElement;` - элемент кнопки модального окна товара
 - `productDescription: HTMLElement` - элемент разметки с описанием
 - `productImage: HTMLImageElement` - элемент разметки с изображением
 - `productTitle: HTMLElement` - элемент разметки с названием
 - `productCategory: HTMLElement` - элемент разметки с категорией
 - `productPrice: HTMLElement` - элемент разметки с ценой
-
+- `protected productId: string;` - `id` товара
 Методы:
-- `open(data: IProduct): void` - расширяет родительский метод, принимая объект данных товара, которые используются для заполнения атрибутов элементов модального окна
-- `close(): void` - расширяет родительский метод, выполняя очистку атрибутов модального окна
+- геттеры и сеттеры для работы со значениями свойств экземпляра
 
 #### Класс Success
 
 Расширяет класс `Modal`. Реализует модальное окно успешной покупки.\
 
 Поля класса:
-- `totalPrice: HTMLElement` - `DOM`- элемент общей стоимости купленных товаров
-- `total: number` - общая стоимость товаров
+- `productsTotal: HTMLElement` - `DOM`- элемент общей стоимости купленных товаров
+- `protected submitButton: HTMLButtonElement;` - элемент кнопки модального окна успешной покупки
 
 Методы:
-- геттер и сеттер для сохранения и получения общей стоимости товаров
+- сеттер для сохранения общей стоимости товаров
 
 #### Класс Product
 
 Расширяет класс `Component`. Отвечает за отображение карточки товара.\
 
 Поля класса:
-- `productButton: HTMLButtonElement` - карточка товара
-- `productImage: HTMLImageElement` - элемент разметки с изображением
-- `productTitle: HTMLElement` - элемент разметки с названием
-- `productCategory: HTMLElement` - элемент разметки с категорией
-- `productPrice: HTMLElement` - элемент разметки с ценой
-- `productId: string` - `id` элемента
+- `protected productButton: HTMLButtonElement` - карточка товара
+- `protected productImage: HTMLImageElement` - элемент разметки с изображением
+- `protected productTitle: HTMLElement` - элемент разметки с названием
+- `protected productCategory: HTMLElement` - элемент разметки с категорией
+- `protected productPrice: HTMLElement` - элемент разметки с ценой
+- `protected productId: string` - `id` элемента
 
 Методы:
-- `setData(productData: IProduct): void` - заполняет атрибуты элементов карточки данными
-- `render(): HTMLElement` - возвращает заполненную карточку с установленными слушателями
+- сеттеры и геттеры для работы с данными экземпляра
 
 #### Класс ProductsContainer
 
-Отвечает за отображение блока с товарами на главной странице.\
-
-Поля класса:
-- `container: HTMLElement` - контейнер
+Расширяет класс `Component`. Отвечает за отображение блока с товарами на главной странице.\
 
 Конструктор класса:
-`constructor(containerElement: HTMLElement)` - принимает `DOM`- элемент контейнера, в котором размещаются карточки
+`constructor(container: HTMLElement)` - принимает `DOM`- элемент контейнера, в котором размещаются карточки
 
 Методы:
-- `addProduct(productElement: HTMLElement): void` - добавляет карточки на страницу
 - сеттер для обновления содержимого
 
-#### Класс CartIcon
+#### Класс Header
 
-Отвечает за отображение количества добавленных товаров и открытия корзины. В конструктор класса передается DOM- элемент, в котором отображается количество товаров.\
+Отвечает за шапку старницы. Содержит иконку корзины, отображащую  количество добавленных товаров и отвечающую за открытие корзины.\
 
 Поля класса:
-- `counterElement: HTMLElement` - элемент, содержащий общее количество товаров в корзине
-- `quantity: number` - количество товаров в корзине
+- `protected cartCounter: HTMLElement` - элемент, содержащий общее количество товаров в корзине
+- `protected _counter: number` - количество товаров в корзине
+- `protected cartButton: HTMLElement;` - элемент кнопки открытия корзины
+- `protected events: IEvents` - экземпляр класса `EventEmitter` для инициализации событий при изменении данных
 
 Конструктор класса:
 `constructor(cartIconElement: HTMLElement)` - принимает `DOM`- элемент иконки корзины
 
 Методы:
-- геттер и сеттер для хранения и получения количества товаров в корзине
+- сеттер для хранения и получения количества товаров в корзине
 
 ### Слой коммуникации
 
@@ -420,17 +414,12 @@ export interface ICartIcon {
 
 События представления:
 - `product:select` - выбор товара для отображения в модальном окне
-- `product:submit` - добавление товара в корзину
-- `product:delete` - удаление товара из корзины
-- `product:validation` - событие, проверяющее возможность добавления товара в корзину
-- `cartIcon:changed` - изменение количества товаров в корзине
+- `product:selected` - товар выбран
+- `cart:open` - открытие корзины
+- `cart:change` - изменение количества товаров в корзине
 - `cart:submit` - сохранение данных корзины в модальном окне
-- `cart:validation` - событие, проверяющее наличие товаров в корзине
-- `cartItem:remove` - удаление товара из корзины
 - `order:input` - изменение данных в форме выбора типа оплаты и адреса
 - `order:submit` - сохранение данных формы выбора типа оплаты и адреса в модальном окне
-- `order:validation` - событие, сообщающее о необходимости валидации формы выбора способа оплаты и адреса пользователя
 - `contacts:input` - изменение данных в форме с почтой и телефоном пользователя
 - `contacts:submit` - сохранение почты и номера телефона пользователя в модальном окне
-- `contacts:validation` - событие, сообщающее о необходимости валидации формы почты и телефона пользователя
 - `success:submit` - закрытие модального окна успешной покупки

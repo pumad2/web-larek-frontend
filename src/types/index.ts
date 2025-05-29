@@ -39,7 +39,7 @@ export interface IUser {
     items: ProductId[];
 }
 
-// Список товаров
+// Данные товаров
 export interface IProductData {
     products: IProduct[];
     preview: string | null;

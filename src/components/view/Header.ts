@@ -3,10 +3,10 @@ import { IEvents } from "../base/events";
 import { IHeader } from "../../types";
 
 export class Header extends Component<IHeader> {
-    cartButton: HTMLElement;
-    cartCounter: HTMLElement;
-    _counter: number = 0;
-    events: IEvents;
+    protected cartButton: HTMLElement;
+    protected cartCounter: HTMLElement;
+    protected _counter: number = 0;
+    protected events: IEvents;
 
     constructor(container: HTMLElement, events: IEvents) {
         super(container, events);

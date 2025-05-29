@@ -4,7 +4,7 @@ import { Modal } from "../common/Modal";
 import { CDN_URL } from "../../utils/constants";
 
 export class ModalProduct extends Modal<IProduct> {
-    protected productButton: HTMLButtonElement
+    protected productButton: HTMLButtonElement;
     protected productImage: HTMLImageElement;
     protected productTitle: HTMLElement;
     protected productCategory: HTMLElement;

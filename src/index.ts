@@ -110,6 +110,7 @@ events.on('cart:open', () => {
 events.on('cart:submit', () => {
     formOrder.render({valid: false});
 })
+
 type FormField = keyof typeof constraintsUser;
 events.on('order:input', ({field, value}: {field: FormField, value: string}) => {
     formOrder.error = {field, value, validInformation: value ? '' : constraintsUser[field].presence.message};
