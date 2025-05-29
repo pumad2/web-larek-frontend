@@ -1,9 +1,5 @@
-import { IProduct } from "../../types";
 import { Component } from "../base/Component";
-
-interface IProductsContainer {
-    catalog: HTMLElement[];
-}
+import { IProductsContainer } from "../../types";
 
 export class ProductsContainer extends Component<IProductsContainer> {
     constructor(container: HTMLElement) {

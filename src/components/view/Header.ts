@@ -1,9 +1,6 @@
 import { Component } from "../base/Component";
 import { IEvents } from "../base/events";
-
-export interface IHeader {
-    counter: number;
-}
+import { IHeader } from "../../types";
 
 export class Header extends Component<IHeader> {
     cartButton: HTMLElement;

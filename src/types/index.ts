@@ -10,28 +10,8 @@ export type ProductId = IProduct['id'];
 // Товар в корзине
 export type CartItem = Pick<IProduct, 'title' | 'price' | 'id'>;
 
-// Главная страница
-export type IMainPage = ICartIcon & IProductData;
-
-// Модальное окно формы оплаты
-export type IOrder = Pick<IUser, 'payment' | 'address'>;
-
-// Модальное окно почты и телефона
-export type IContacts = Pick<IUser, 'email' | 'phone'>;
-
 // Модальное окно успешного оформления
 export type ISuccess = Pick<IUser, 'total'>;
-
-// Модальное окно товара
-export interface ModalProductItem {
-    product: {
-        image: string;
-        category: ProductCategory;
-        description: string;
-        price: number;
-        title: string;
-    }
-}
 
 // Ответ от сервера на получение карточек
 export interface IProductApi {
@@ -64,38 +44,45 @@ export interface IProductData {
     products: IProduct[];
     preview: string | null;
     getProduct(productId: string): IProduct | undefined;
+    setProducts(products: IProductApi): void;
+}
+
+// Список товаров
+export interface IProductsContainer {
+    catalog: HTMLElement[];
+}
+
+// Заголовок страницы
+export interface IHeader {
+    counter: number;
 }
 
 // Хранение данных пользователя
 export interface IUserData {
-    userData: IUser;
+    render(userData: Partial<IUser>): void;
+    isInCart(productId: string): boolean;
+    toggleItem(productId: string): boolean;
     removeData(): void;
-    checkValidation(data: Record<keyof IUser, string | number>): boolean;
-}
-
-// Хранение данных корзины
-export interface ICartData {
-    cartData: CartItem[];
-    total: number;
-}
-
-// Модальное окно
-export interface IModal {
-    modal: HTMLElement;
-}
-
-// Форма
-export interface IFormState {
-    valid: boolean;
-    errors: string;
 }
 
 // Корзина
 export interface ICart {
-    //items: CartItem[];
-    //total: number;
-    addCartItem(productElement: HTMLElement): void;
-    removeCartItem(productId: string, payload: Function | null): void;
+    catalog: HTMLElement;
+    total: number;
+    deleteCatalog(): void;
+    updateIndexes(): void;
+}
+
+// Форма
+export interface IForm {
+    valid: boolean;
+	inputValues: Record<string, string>;
+	error: Record<string, string>;
+    toggleButtons(): void;
+    getValues(): void;
+    showError(field: string, errorMessage: string): void;
+    hideError(field: string): void;
+    checkFields(): boolean;
 }
 
 // Иконка корзины на главном экране

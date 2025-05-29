@@ -1,4 +1,4 @@
-import { CartItem, IProduct } from "../../types";
+import { CartItem } from "../../types";
 import { IEvents } from "../base/events";
 import { Component } from "../base/Component";
 

@@ -1,7 +1,5 @@
 import { IUserData, ProductId, IUser, PaymentMethod } from "../../types";
-import { constraintsUser } from "../../utils/constants";
 import { IEvents } from "../base/events";
-import validate from "validate.js";
 
 export class UserData implements IUserData {
     userData: IUser;
@@ -20,8 +18,7 @@ export class UserData implements IUserData {
     }
 
     render(userData: Partial<IUser>) {
-        const {...otherUserData} = userData;
-        Object.assign(this, otherUserData);
+        Object.assign(this.userData, userData);
         return this.userData;
     }
 
@@ -92,49 +89,13 @@ export class UserData implements IUserData {
     }
 
     removeData() {
-        this.userData = null;
-    }
-
-    checkValidation(data: Record<keyof IUser, string | number>) {
-        const isValid = !Boolean(validate(data, constraintsUser));
-        return isValid;
-    }
-
-    checkField(data: {field: keyof IUser; value: string}) {
-        switch (data.field) {
-            case 'address':
-                return this.checkAddress(data.value);
-            case 'email':
-                return this.checkEmail(data.value);
-            case 'phone':
-                return this.checkPhone(data.value);
-        }
-    }
-
-    checkAddress(value: string) {
-        const result = validate.single(value, constraintsUser.address);
-        if (result) {
-            return result[0]
-        } else {
-            return '';
-        }
-    }
-
-    checkEmail(value: string) {
-        const result = validate.single(value, constraintsUser.email);
-        if (result) {
-            return result[0]
-        } else {
-            return '';
-        }
-    }
-
-    checkPhone(value: string) {
-        const result = validate.single(value, constraintsUser.phone);
-        if (result) {
-            return result[0]
-        } else {
-            return '';
-        }
+        this.userData = {
+            payment: null,
+            email: null,
+            phone: null,
+            address: null,
+            total: 0,
+            items: []
+        };
     }
 }

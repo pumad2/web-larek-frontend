@@ -1,5 +1,6 @@
 import { IEvents } from "./events";
 import { cloneTemplate } from "../../utils/utils";
+
 export abstract class Component<T> {
     protected container: HTMLElement;
     protected events: IEvents;
@@ -16,24 +17,8 @@ export abstract class Component<T> {
     }
 
     render(data?: Partial<T>) {
-            Object.assign(this as object, data ?? {});
-            return this.container;
-        }
-
-    setValid(isValid: boolean) {
-        
-    }
-
-    // Переключить класс
-    toggleClass(element: HTMLElement, className: string, force?: boolean) {
-        element.classList.toggle(className, force);
-    }
-
-    // Установить текстовое содержимое
-    protected setText(element: HTMLElement, value: unknown) {
-        if (element) {
-            element.textContent = String(value);
-        }
+        Object.assign(this as object, data ?? {});
+        return this.container;
     }
 
     // Сменить статус блокировки
@@ -41,16 +26,6 @@ export abstract class Component<T> {
         if (element) {
             if (state) element.setAttribute('disabled', 'disabled');
             else element.removeAttribute('disabled');
-        }
-    }
-
-    // Установить изображение с алтернативным текстом
-    protected setImage(element: HTMLImageElement, src: string, alt?: string) {
-        if (element) {
-            element.src = src;
-            if (alt) {
-                element.alt = alt;
-            }
         }
     }
 }

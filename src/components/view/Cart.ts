@@ -1,11 +1,6 @@
-import { CartItem, IProduct } from "../../types";
-import { Component } from "../base/Component";
 import { IEvents } from "../base/events";
 import { Modal } from "../common/Modal";
-
-interface ICart {
-    catalog: HTMLElement[];
-}
+import { ICart } from "../../types";
 
 export class Cart extends Modal<ICart> {
     protected cartButton: HTMLElement;
@@ -19,6 +14,12 @@ export class Cart extends Modal<ICart> {
         this.cartButton = this.container.querySelector('.basket__button');
         this._catalog = this.container.querySelector('.basket__list');
         this.cartButton.addEventListener('click', () => this.events.emit('cart:submit'));
+    }
+
+    deleteCatalog() {
+        this._catalog.innerHTML = '';
+        this.total = 0;
+        this.setDisabled(this.cartButton, true);
     }
 
     get catalog(): HTMLElement {

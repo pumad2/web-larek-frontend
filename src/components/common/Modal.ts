@@ -1,6 +1,4 @@
 import { Component } from "../base/Component";
-import { ensureElement } from "../../utils/utils";
-import { IModal } from "../../types";
 import { IEvents } from "../base/events";
 
 export class Modal<T> extends Component<T> {
@@ -47,7 +45,7 @@ export class Modal<T> extends Component<T> {
         this.events.emit('modal:close');
     }
 
-    render(data?: T): HTMLElement{
+    render(data?: Partial<T>): HTMLElement{
         super.render(data);
         this.content = this.container;
         this.open();

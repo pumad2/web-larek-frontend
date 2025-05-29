@@ -10,7 +10,7 @@ export class Success extends Modal<ISuccess> {
         super(template, events);
         this.submitButton = this.container.querySelector('.order-success__close');
         this.productsTotal = this.container.querySelector('.order-success__description');
-        this.submitButton.addEventListener('click', () => close());
+        this.submitButton.addEventListener('click', () => this.events.emit('success:submit'));
     }
 
     set total(value: number) {

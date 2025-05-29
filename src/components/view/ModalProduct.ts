@@ -1,4 +1,4 @@
-import { IProduct, ModalProductItem, ProductCategory } from "../../types";
+import { IProduct, ProductCategory } from "../../types";
 import { IEvents } from "../base/events";
 import { Modal } from "../common/Modal";
 import { CDN_URL } from "../../utils/constants";

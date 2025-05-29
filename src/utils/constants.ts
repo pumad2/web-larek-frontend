@@ -7,12 +7,12 @@ export const settings = {
 
 export const constraintsUser = {
     address: {
-        presence: { message: '^Поле не может быть пустым', allowEmpty: false },
+        presence: { message: 'Поле не может быть пустым', allowEmpty: false },
     },
     email: {
-        presence: { message: '^Поле не может быть пустым', allowEmpty: false },
+        presence: { message: 'Поле не может быть пустым', allowEmpty: false },
     },
     phone: {
-        presence: { message: '^Поле не может быть пустым', allowEmpty: false },
+        presence: { message: 'Поле не может быть пустым', allowEmpty: false },
     },
-};
+} as const;
