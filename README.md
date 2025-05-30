@@ -324,20 +324,30 @@ export interface ICartIcon {
 - `deleteCatalog()` - очищает корзину, обнуляет общую стоимость и отключает активность кнопки
 - `updateIndexes()` - обновляет порядковые номера товаров в корзине
 
-#### Класс ModalProduct
+#### Класс ProductView
 
-Расширяет класс `Modal`. Реализует модальное окно с товаром. При сабмите инициирует событие, передавая в него объект с данными товара. При открытии модального окна получает данные товара, которые нужно показать.\
+Расширяет класс `Modal`. Абстрактный класс, содержит в себе свойства и методы для карточек товаров.
 
 Поля класса:
-- `protected productButton: HTMLButtonElement;` - элемент кнопки модального окна товара
-- `productDescription: HTMLElement` - элемент разметки с описанием
-- `productImage: HTMLImageElement` - элемент разметки с изображением
-- `productTitle: HTMLElement` - элемент разметки с названием
-- `productCategory: HTMLElement` - элемент разметки с категорией
-- `productPrice: HTMLElement` - элемент разметки с ценой
-- `protected productId: string;` - `id` товара
+- `protected productButton: HTMLButtonElement` - карточка товара
+- `protected productImage: HTMLImageElement` - элемент разметки с изображением
+- `protected productTitle: HTMLElement` - элемент разметки с названием
+- `protected productCategory: HTMLElement` - элемент разметки с категорией
+- `protected productPrice: HTMLElement` - элемент разметки с ценой
+- `protected productId: string` - `id` элемента
+
 Методы:
-- геттеры и сеттеры для работы со значениями свойств экземпляра
+- сеттеры и геттеры для работы с данными экземпляра
+
+#### Класс ModalProduct
+
+Расширяет класс `ProductView`. Реализует модальное окно с товаром. При сабмите инициирует событие, передавая в него объект с данными товара. При открытии модального окна получает данные товара, которые нужно показать.\
+
+Поля класса:
+- `productDescription: HTMLElement` - элемент разметки с описанием
+
+Методы:
+- сеттеры для работы со значениями свойств экземпляра
 
 #### Класс Success
 
@@ -352,18 +362,7 @@ export interface ICartIcon {
 
 #### Класс Product
 
-Расширяет класс `Component`. Отвечает за отображение карточки товара.\
-
-Поля класса:
-- `protected productButton: HTMLButtonElement` - карточка товара
-- `protected productImage: HTMLImageElement` - элемент разметки с изображением
-- `protected productTitle: HTMLElement` - элемент разметки с названием
-- `protected productCategory: HTMLElement` - элемент разметки с категорией
-- `protected productPrice: HTMLElement` - элемент разметки с ценой
-- `protected productId: string` - `id` элемента
-
-Методы:
-- сеттеры и геттеры для работы с данными экземпляра
+Расширяет класс `ProductView`. Отвечает за отображение карточки товара.\
 
 #### Класс ProductsContainer
 

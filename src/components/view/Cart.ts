@@ -33,11 +33,7 @@ export class Cart extends Modal<ICart> {
 
     set total(value: number) {
         this._total.textContent = `${value} синапсов`;
-        if (value > 0) {
-            this.setDisabled(this.cartButton, false);
-        } else {
-            this.setDisabled(this.cartButton, true);
-        }
+        this.setDisabled(this.cartButton, value <= 0);
     }
 
     updateIndexes() {

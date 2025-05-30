@@ -58,7 +58,7 @@ events.on('productData: loaded', () => {
 })
 
 events.on('product:select', (data: {product: Product}) => {
-    productData.preview = data.product._id;
+    productData.preview = data.product.id;
 })
 
 events.on('product:selected', () => {
